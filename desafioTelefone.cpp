@@ -2,19 +2,25 @@
 #include <ctime>
 #include <vector>
 #include <random>
+#include <iomanip>
 using namespace std;
 using matriz = vector<vector<float>>;
-const int tam = 1;
+const int tam = 5;
 
 void NomesClientes(string nomes[]);
-void telefone(vector<int> &primeiraPArte, vector<int> &segundaParte);
+void telefone(vector<int>
+                  &primeiraPArte,
+              vector<int> &segundaParte);
 int tipo(vector<int> &tipoAss);
 int Usominutos(vector<int> &MinutosUsados);
 void bancoDados(string *Bnomes, vector<int> &Btipo, vector<int> &BMinutos, vector<int> &primeiraPArte, vector<int> &segundaParte);
-int valorConta(vector<int> &MinConsumidos, vector<int> &TipoConta);
 
 int main(int argc, char const *argv[])
 {
+    matriz mat = {{25.5, 0.10},
+                  {35.0, 0.12},
+                  {60.0, 0.15}};
+
     srand(time(NULL));
 
     string *nome = new string[tam];
@@ -23,7 +29,7 @@ int main(int argc, char const *argv[])
     vector<int> Minusados;
     vector<int> TelPrim;
     vector<int> TelSeg;
-    
+    vector<float> Valtconta;
 
     NomesClientes(nome);
     system("cls");
@@ -54,12 +60,19 @@ void telefone(vector<int> &primeiraPArte, vector<int> &segundaParte)
 }
 int tipo(vector<int> &tipoAss)
 {
+    random_device tp;
+    mt19937 tipoAle(tp());
+    uniform_int_distribution<> tps(0, 2);
+
     int tipo = rand() % 2;
-    for (size_t i = 0; i < tam; i++)
+    for (int i = 0; i < tam; i++)
     {
-        tipoAss.push_back(tipo);
+        tipoAss.push_back(tps(tipoAle));
     }
-    return 0;
+    for (int i = 0; i < tam; i++)
+    {
+        return tipoAss[i];
+    }
 }
 int Usominutos(vector<int> &MinutosUsados)
 {
@@ -75,6 +88,42 @@ int Usominutos(vector<int> &MinutosUsados)
 }
 void bancoDados(string *Bnomes, vector<int> &Btipo, vector<int> &BMinutos, vector<int> &primeiraPArte, vector<int> &segundaParte)
 {
+    matriz mat = {{25.5, 0.10},
+                  {35.0, 0.12},
+                  {60.0, 0.15}};
+    float *conta = new float[tam];
+    float excesso = 0.0;
+    for (int i = 0; i < tam; i++)
+    {
+
+        if (Btipo[i] == 0 && BMinutos[i] <= 90)
+        {
+            conta[i] = mat[0][0];
+        }
+        else if (Btipo[i] == 0 && BMinutos[i] > 90)
+        {
+            excesso = (BMinutos[i] - 90) * mat[0][1];
+            conta[i] = excesso + mat[0][0];
+        }
+        else if (Btipo[i] == 1 && BMinutos[i] <= 90)
+        {
+            conta[i] == mat[1][0];
+        }
+        else if (Btipo[i] == 1 && BMinutos[i] > 90)
+        {
+            excesso = (BMinutos[i] - 90) * mat[1][1];
+            conta[i] = excesso + mat[1][0];
+        }
+        else if (Btipo[i] == 2 && BMinutos[i] <= 90)
+        {
+            conta[i] = mat[2][0];
+        }
+        else
+        {
+            excesso = (BMinutos[i] - 90) * mat[2][1];
+            conta[i] = excesso + mat[2][0];
+        }
+    }
 
     cout << "Banco de Dados : " << endl;
     for (int i = 0; i < tam; i++)
@@ -83,40 +132,7 @@ void bancoDados(string *Bnomes, vector<int> &Btipo, vector<int> &BMinutos, vecto
              << "Telefone:" << primeiraPArte[i] << "-" << segundaParte[i] << '\n'
              << "Tipo : " << Btipo[i] << '\n'
              << "Uso Minutos: " << BMinutos[i] << '\n'
-             << "Conta = R$ " << valorConta(BMinutos,Btipo) << endl
+             << "Conta = R$ " << conta[i] << endl
              << endl;
-    }
-}
-int valorConta(vector<int> &MinConsumidos, vector<int> &TipoConta)
-{
-    float valorConta;
-    float excesso = 0;
-    matriz mat = {{25.5, 0.10},
-                  {35.0, 0.12},
-                  {60.0, 0.15}};
-    int i = 0;
-    int nl = mat.size();
-    int nc = mat[0].size();
-    // OBS: EU TENHO QUE DEFENIR OS TIPOS NA MATRIZ, EX : TIPO[1] = 25.5, tipo[2] == 35, tipo[3] == 60
-    for (int l = 0; l < nl; l++)
-    {
-        for (int c = 0; c < nc; c++)
-        {
-            if (TipoConta[i] == mat[l][0] && MinConsumidos[i] <= 90)
-            {
-                valorConta = mat[l][0];
-                i++;
-                return valorConta;
-                break;
-            }
-            else
-            {
-                excesso = MinConsumidos[i] - 90;
-                valorConta = mat[l][0];
-                i++;
-                return valorConta;
-                break;
-            }
-        }
     }
 }
